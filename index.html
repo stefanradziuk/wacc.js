@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+
+    <title>WACC.JS</title>
+  </head>
+  <body>
+    <div class="container gap-3">
+      <div class="py-4 text-center">
+        <h1 class="display-5">Welcome, Whackers!</h1>
+      </div>
+
+      <div class="row">
+        <div id="leftCol" class="col-md-7">
+          <textarea id="compiler-input" class="form-control font-monospace p-md-4 w-100 mb-2" rows="20" cols="60">
+begin
+    println "Hello, Wacc!"
+end
+</textarea>
+
+          <div id="compiler-errors" class="invalid-feedback alert font-monospace w-100 mb-3" role="alert">
+            [100] Compiler error!
+          </div>
+        </div>
+
+        <div id="rightCol" class="col-md-5">
+          <button id="compile-button" class="btn btn-primary btn-md btn-block w-100 mb-3" type="button" onclick="compileButtonClick()">
+            Compile!
+          </button>
+
+          <textarea id="compiler-output" class="form-control font-monospace p-md-4 w-100 mb-2" rows="18" cols="30" disabled="true" placeholder="Simply click the right button and your assembly will soon be here..."></textarea>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <h4>About</h4>
+          <p>
+          Hi! This is our compiler, written in Scala and compiled to JavaScript
+          using <a href="https://www.scala-js.org/">Scala.js</a>, developed as
+          part of COMP50007 at Imperial College London. The compiler accepts
+          source code in the WACC programming language* and outputs assembly
+          targeted at
+          <a href="https://static.docs.arm.com/ddi0301/h/DDI0301H_arm1176jzfs_r0p7_trm.pdf">
+            the ARM1176JZF-S processor
+          </a>.
+          </p>
+
+          <p>
+          * WACC is a simple iterative programming language used for teaching
+          at Imperial. Our compiler accepts an extended version of the
+          language.
+          </p>
+
+          <h4>Authors</h4>
+          <ul>
+            <li>Andrei Gramescu (<a href="https://www.andreigramescu.com/">andreigramescu.com</a>)</li>
+            <li>Jessica Lally (<a href="https://github.com/jessicalally">GitHub</a>)</li>
+            <li>Stefan Radziuk</li>
+            <li>George Stacey</li>
+          </ul>
+
+          <h4>Sample programs</h4>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <h5>Peano numbers</h5>
+          <textarea id="compiler-output" class="form-control font-monospace p-md-4 w-100 mb-2" cols="30" rows="29" disabled="true" placeholder="Simply click the right button and your assembly will soon be here...">
+# Output:
+# 2
+
+begin
+  type 'Peano := (unit | 'Peano)
+
+  int peanoToInt('Peano num) is
+    int res = 0;
+    num matches
+      u : unit do
+        skip
+      done
+      p : 'Peano do
+        int rec = call peanoToInt(p);
+        res = 1 + rec
+      done
+    end;
+
+    return res
+  end
+
+  'Peano p0 = nothing : unit;
+  'Peano p1 = p0 : 'Peano;
+  'Peano p2 = p1 : 'Peano;
+
+  int n = call peanoToInt(p2);
+  println n
+end
+          </textarea>
+
+        </div>
+        <div class="col-md-6">
+          <h5>Higher order and anonymous functions</h5>
+          <textarea id="compiler-output" class="form-control font-monospace p-md-4 w-100 mb-2" cols="30" rows="35" disabled="true" placeholder="Simply click the right button and your assembly will soon be here...">
+# Output:
+# [1, 4, 9, 16, ]
+
+begin
+    # applies f to each element in arr (creating a new arr)
+    int[] map(((int) =&gt; int) f, int[] input) is
+        int i = 0;
+        int[] output = newarr(len input);
+        while i &lt; len output do
+            output[i] = call f(input[i]);
+            i = i + 1
+        done;
+
+        return output
+    end
+
+    bool print_arr(int[] arr) is
+        print "[";
+
+        int i = 0;
+        while i &lt; len arr do
+            print arr[i];
+            print ", ";
+            i = i + 1
+        done;
+
+        println "]";
+        return true
+    end
+
+    int[] xs = [1, 2, 3, 4];
+    int[] squared = call map(lam int(int x) =&gt; x * x, xs);
+    bool success = call print_arr(squared)
+end
+          </textarea>
+        </div>
+      </div>
+    </div>
+    <!-- Scala.js -->
+    <script type="text/javascript" src="main.js"></script>
+
+    <!-- Optional JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+  </body>
+</html>
